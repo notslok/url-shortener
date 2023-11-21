@@ -12,9 +12,7 @@ app.register(require('@fastify/cors'), {
     origin: '*',
     methods: ['GET', 'POST']
 });
-// app.register(require('@fastify/mysql'), {
-//     connectionString: 'mysql://root@localhost/mysql'
-// })
+
 
 
 // create a new MySQL connection
@@ -41,19 +39,42 @@ app.post("/shorten/:url", async function(request, response) {
     await saltedMd5(request.params.url, salt, true).then(
         (saltedURL) => {
             const sURLHash = saltedURL.substr(saltedURL.length - 7);
-            
+            const sURL = `http://localhost:3000/${sURLHash}`;
+
             connection.query(
-                `INSERT INTO urlDB.urlMAP (URL_hash, URL_string) VALUES (?, ?);`,
-                [sURLHash, request.params.url],
+                `INSERT INTO urlDB.urlMAP (URL_hash, URL_string, sURL) VALUES (?, ?, ?);`,
+                [sURLHash, request.params.url, sURL],
                 (err, result) => {
-                   console.log(err, result);
+                   if(err!=null){
+                    console.log("here");
+                       response.status(400).send(err);
+                    }
+                    
+                    request.log.info(`url data successfully inserted in DB`, result);
                 }
-              );
-            
-            response.send(sURLHash);
+                );
+                
+                response.status(200).send(sURL);
+            // response.send(sURLHash);
         }
     )
 });
+
+app.get("/:urlHash", function(request, response) {
+    
+    connection.query(
+        `SELECT URL_string FROM urlDB.urlMAP WHERE urlDB.urlMAP.URL_hash = (?)`,
+        [request.params.urlHash],
+        (err, result) => {
+            const url = JSON.stringify(result);
+            const [{URL_string}] = result
+            const expandedURL = `https://${URL_string}`;
+            
+            response.code(303).redirect(302, expandedURL);
+        }
+    );
+});
+
 app.get("/", function (request, response) {
     request.log.info("something happened");
     response.send("Hello, world!");
