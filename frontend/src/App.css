@@ -4,3 +4,10 @@
   padding: 2rem;
   text-align: center;
 }
+
+.url_heading_hidden {
+  visibility: hidden;
+}
+.url_heading {
+  color: #1976d2;
+}

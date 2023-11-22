@@ -35,7 +35,7 @@ const connection = mysql.createConnection({
   //connection.end();
 
 app.post("/shorten/:url", async function(request, response) {
-    console.log(request.params);
+    //console.log(request.params);
     await saltedMd5(request.params.url, salt, true).then(
         (saltedURL) => {
             const sURLHash = saltedURL.substr(saltedURL.length - 7);
@@ -45,16 +45,16 @@ app.post("/shorten/:url", async function(request, response) {
                 `INSERT INTO urlDB.urlMAP (URL_hash, URL_string, sURL) VALUES (?, ?, ?);`,
                 [sURLHash, request.params.url, sURL],
                 (err, result) => {
-                   if(err!=null){
-                    console.log("here");
-                       response.status(400).send(err);
-                    }
-                    
+                    //console.log(result);
                     request.log.info(`url data successfully inserted in DB`, result);
                 }
                 );
-                
-                response.status(200).send(sURL);
+                console.log({url: sURL})
+            
+                response
+                    .code(200)
+                    .send({url: sURL});
+                    // .header('Content-Type', 'application/json; charset=utf-8')
             // response.send(sURLHash);
         }
     )
