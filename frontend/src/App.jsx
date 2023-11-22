@@ -42,7 +42,7 @@ function App() {
         <Box sx={{ width: 500, maxWidth: '100%'}}>
           <TextField fullWidth label="URL" id="fullWidth" value={url} onChange={handleUrlChange}/>
         </Box>
-        <Button onClick={handleUrlSubmit} variant="contained" endIcon={<CompressSharpIcon />}>Shorten url_heading</Button>
+        <Button onClick={handleUrlSubmit} variant="contained" endIcon={<CompressSharpIcon />}>Shorten url</Button>
       </Stack>
       <br></br>
       <Divider style = {sUrl === "" ? {visibility: "hidden"} : {color: "#1976d2"}} textAlign="left">Your hashed url:</Divider>
